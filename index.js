@@ -59,7 +59,7 @@ function update() {
             }
 
         ]
-    }
+    };
 }
 
 client.once('ready', () => {
