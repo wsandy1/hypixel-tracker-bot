@@ -4,7 +4,7 @@
   "description": "A discord bot to track users on hypixel",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/MrSandyWilly/hypixel-tracker-bot#readme",
   "dependencies": {
-    "discord.js": "^13.6.0"
+    "axios": "^0.25.0",
+    "discord.js": "^13.6.0",
+    "node-fetch": "^3.2.0",
+    "whatwg-fetch": "^3.6.2",
+    "xhr2": "^0.2.1"
   }
 }
