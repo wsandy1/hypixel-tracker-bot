@@ -30,36 +30,31 @@ function update() {
         })
             .then(res => {
                 user.online = res.data.session.online;
-                client.channels.cache.get('936524453582618644').send('test');
             });
     }
 
     var embed = {
         title: 'Hypixel Tracking',
-        fields: [
-            {
-                name: 'test',
-                value: 'test',
-                inline: false
-            },
-            {
-                name: 'test',
-                value: 'test',
-                inline: false
-            },
-            {
-                name: 'test',
-                value: 'test',
-                inline: true
-            },
-            {
-                name: 'test',
-                value: 'test',
-                inline: true
-            }
-
-        ]
+        description: ''
     };
+
+    for (user of users) {
+        if (user.online == true) {
+            embed.description += `\n<:green_circle:936683622688243752> ${user.name} - *online*`;
+        } else {
+            continue;
+        }
+    }
+
+    for (user of users) {
+        if (user.online == false) {
+            embed.description += `\n<:red_circle:936684130895282176> ${user.name} - *offline*`;
+        } else {
+            continue;
+        }
+    }
+
+    client.channels.cache.get('936524453582618644').send({ embeds: [embed] });
 }
 
 client.once('ready', () => {
