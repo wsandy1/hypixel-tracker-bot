@@ -87,7 +87,7 @@ function update() {
 client.once('ready', () => {
 	console.log('Ready!');
     cacheusers();
-    var interval = setInterval(update, 10000);
+    var interval = setInterval(update, 300000);
 });
 
 client.on('interactionCreate', async interaction => {
