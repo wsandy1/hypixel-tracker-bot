@@ -1,7 +1,11 @@
 const fs = require('fs');
 const axios = require('axios');
 const { Client, Collection, Intents } = require('discord.js');
-const { token, igns, apikey, supabasekey } = require('./config.json');
+// const { token, igns, apikey, supabasekey } = require('./config.json');
+
+const token = process.env.DISCORD_TOKEN;
+const apikey = process.env.HYPIXEL_KEY;
+const supabaskey = process.env.SUPABASE_KEY;
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 

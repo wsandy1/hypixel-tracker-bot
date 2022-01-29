@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { supabasekey } = require('../config.json');
+// const { supabasekey } = require('../config.json');
+const supabaskey = process.env.SUPABASE_KEY;
 
 module.exports = {
 	data: new SlashCommandBuilder()
