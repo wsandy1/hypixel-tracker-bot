@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/MrSandyWilly/hypixel-tracker-bot#readme",
   "dependencies": {
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/rest": "^0.3.0",
     "axios": "^0.25.0",
+    "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0",
     "node-fetch": "^3.2.0",
     "whatwg-fetch": "^3.6.2",

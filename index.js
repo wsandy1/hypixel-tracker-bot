@@ -1,55 +1,68 @@
+const fs = require('fs');
 const axios = require('axios');
-const { Client, Intents, CommandInteractionOptionResolver } = require('discord.js');
-const { token, igns, apikey } = require('./config.json');
+const { Client, Collection, Intents } = require('discord.js');
+const { token, igns, apikey, supabasekey } = require('./config.json');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
-var users = [];
+client.commands = new Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-for (ign of igns) {
-    axios.get(`https://api.mojang.com/users/profiles/minecraft/${ign}`)
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.commands.set(command.data.name, command);
+}
+
+var userscache = [];
+
+function cacheusers() {
+    axios.get('https://cfubqfwhxdlrxtaubgpd.supabase.co/rest/v1/users?select=*', {
+        headers: {
+            apikey: supabasekey,
+            Authorization: "Bearer " + supabasekey
+        }
+    })
         .then(res => {
-            let currentuser = {
-                "name": res.data.name,
-                "uuid": res.data.id,
-                "lastonline": "n/a",
-                "online": false
-            };
+            userscache = [];
+            for (user of res.data) {
+                let current = {
+                    "name": user.name,
+                    "uuid": user.uuid,
+                    "online": false
+                };
 
-            users.push(currentuser);
+                userscache.push(current);
+            }
         });
 }
 
 function update() {
-    console.log("updating")
     let refresh = false;
-    for (user of users) {
+    for (user of userscache) {
         axios.get(`https://api.hypixel.net/status?uuid=${user.uuid}`, {
             headers: {
                 'API-Key': apikey
             }
         })
             .then(res => {
-                console.log(res)
                 if (res.data.session.online != user.online) {
-                    console.log("must refresh")
                     refresh = true;
                 }
                 return res.data.session.online;
             })
             .then(online => {
-                console.log(online)
                 user.online = online;
             })
             .then(() => {
                 if (refresh) {
-                    console.log("refreshing")
                     var embed = {
                         title: 'Hypixel Tracking',
                         description: ''
                     };
                 
-                    for (user of users) {
+                    for (user of userscache) {
                         if (user.online == true) {
                             embed.description += `\n<:green_circle:936683622688243752> ${user.name} - *online*`;
                         } else {
@@ -57,7 +70,7 @@ function update() {
                         }
                     }
                 
-                    for (user of users) {
+                    for (user of userscache) {
                         if (user.online == false) {
                             embed.description += `\n<:red_circle:936684130895282176> ${user.name} - *offline*`;
                         } else {
@@ -73,7 +86,25 @@ function update() {
 
 client.once('ready', () => {
 	console.log('Ready!');
+    cacheusers();
     var interval = setInterval(update, 10000);
+});
+
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+
+    cacheusers();
 });
 
 client.login(token);
