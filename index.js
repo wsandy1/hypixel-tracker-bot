@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, CommandInteractionOptionResolver } = require('discord.js');
 const { token, igns, apikey } = require('./config.json');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -21,6 +21,7 @@ for (ign of igns) {
 }
 
 function update() {
+    console.log("updating")
     let refresh = false;
     for (user of users) {
         axios.get(`https://api.hypixel.net/status?uuid=${user.uuid}`, {
@@ -29,39 +30,44 @@ function update() {
             }
         })
             .then(res => {
+                console.log(res)
                 if (res.data.session.online != user.online) {
+                    console.log("must refresh")
                     refresh = true;
                 }
                 return res.data.session.online;
             })
             .then(online => {
+                console.log(online)
                 user.online = online;
+            })
+            .then(() => {
+                if (refresh) {
+                    console.log("refreshing")
+                    var embed = {
+                        title: 'Hypixel Tracking',
+                        description: ''
+                    };
+                
+                    for (user of users) {
+                        if (user.online == true) {
+                            embed.description += `\n<:green_circle:936683622688243752> ${user.name} - *online*`;
+                        } else {
+                            continue;
+                        }
+                    }
+                
+                    for (user of users) {
+                        if (user.online == false) {
+                            embed.description += `\n<:red_circle:936684130895282176> ${user.name} - *offline*`;
+                        } else {
+                            continue;
+                        }
+                    }
+            
+                    client.channels.cache.get('936524453582618644').send({ embeds: [embed] });
+                }
             });
-    }
-
-    if (refresh) {
-        var embed = {
-            title: 'Hypixel Tracking',
-            description: ''
-        };
-
-        for (user of users) {
-            if (user.online == true) {
-                embed.description += `\n<:green_circle:936683622688243752> ${user.name} - *online*`;
-            } else {
-                continue;
-            }
-        }
-
-        for (user of users) {
-            if (user.online == false) {
-                embed.description += `\n<:red_circle:936684130895282176> ${user.name} - *offline*`;
-            } else {
-                continue;
-            }
-        }
-
-        client.channels.cache.get('936524453582618644').send({ embeds: [embed] });
     }
 }
 
