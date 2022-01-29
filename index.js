@@ -21,8 +21,7 @@ for (ign of igns) {
 }
 
 function update() {
-    console.log('update')
-    var usersref = users
+    let refresh = false;
     for (user of users) {
         axios.get(`https://api.hypixel.net/status?uuid=${user.uuid}`, {
             headers: {
@@ -30,20 +29,15 @@ function update() {
             }
         })
             .then(res => {
-                user.online = res.data.session.online;
-                console.log(user)
+                if (res.data.session.online != user.online) {
+                    refresh = true;
+                }
+                return res.data.session.online;
+            })
+            .then(online => {
+                user.online = online;
             });
     }
-
-    var refresh = false;
-    users.forEach((user, index) => {
-        // console.log("prev" + usersref[index].online);
-        // console.log("now" + user.online);
-        if (user.online != usersref[index].online) {
-            console.log('needrefresh')
-            refresh = true;
-        }
-    });
 
     if (refresh) {
         var embed = {
