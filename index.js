@@ -83,7 +83,7 @@ function update() {
                         }
                     }
             
-                    client.channels.cache.get('936524453582618644').send({ embeds: [embed] });
+                    client.channels.cache.get('936524453582618644').send({ content: `<@&${937280646852776016}>`, embeds: [embed] });
                 }
             });
     }
