@@ -44,7 +44,8 @@ function cacheusers() {
 
 function update() {
     let refresh = false;
-    for (user of userscache) {
+    for (let [i, user] of userscache.entries()) {
+    // for (user of userscache) {
         axios.get(`https://api.hypixel.net/status?uuid=${user.uuid}`, {
             headers: {
                 'API-Key': apikey
@@ -60,7 +61,7 @@ function update() {
                 user.online = online;
             })
             .then(() => {
-                if (refresh) {
+                if (refresh && i === userscache.length - 1) {
                     var embed = {
                         title: 'Hypixel Tracking',
                         description: ''
@@ -91,7 +92,7 @@ function update() {
 client.once('ready', () => {
 	console.log('Ready!');
     cacheusers();
-    var interval = setInterval(update, 300000);
+    var interval = setInterval(update, 60000);
 });
 
 client.on('interactionCreate', async interaction => {
